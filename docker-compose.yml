@@ -1,0 +1,48 @@
+services:
+  machine1:
+    image: machine
+    depends_on:
+      - machine2
+    networks:
+      network_1: 
+        ipv4_address: 10.10.0.4
+    cap_add:
+      - NET_ADMIN
+
+  machine2:
+    image: machine
+    build:
+      context: ./box
+      dockerfile: Dockerfile
+    networks:
+      network_1:
+        ipv4_address: 10.10.0.8
+      network_2:
+        ipv4_address: 10.5.0.8
+    cap_add:
+      - NET_ADMIN
+        
+  machine3:
+    image: machine
+    depends_on:
+      - machine2
+    networks:
+      network_2:
+        ipv4_address: 10.5.0.4
+    cap_add:
+      - NET_ADMIN
+networks:
+  network_1:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 10.10.0.0/24
+          gateway: 10.10.0.1
+  network_2:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 10.5.0.0/24
+          gateway: 10.5.0.1
